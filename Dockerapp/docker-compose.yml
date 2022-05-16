@@ -1,0 +1,35 @@
+services:
+  inventorymanager:
+
+    build:
+      context: .
+    ports:
+      - "${APIPORT}:5000"
+    expose:
+      - ${APIPORT}
+    env_file:
+      - .env
+    networks:
+      - app-net
+    links:
+      - "database:db"
+
+
+  database:
+    image: 'postgres:latest'
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: ${DBUSER} # The PostgreSQL user (useful to connect to the database)
+      POSTGRES_PASSWORD: ${DBPASS} # The PostgreSQL password (useful to connect to the database)
+      POSTGRES_DB: ${DATABASE} # The PostgreSQL default database (automatically created at first launch)
+
+    volumes:
+      - ./db/scripts/:/docker-entrypoint-initdb.d/
+      - ./db/data:/var/lib/postgresql/data
+
+    networks:
+      - app-net
+
+networks:
+  app-net:

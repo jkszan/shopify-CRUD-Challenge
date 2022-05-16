@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Shopify Logistics CRUD API
+  description: >-
+    An API implementing a CRUD system for a logistics company, built for
+    Production Engineer Intern and Backend Engineer Intern applications.
+
+tags:
+  - name: item
+    description: Endpoints implementing CRUD operations for the item table
+
+  - name: inventory
+    description: Demo endpoint for the inventory table
+
+  - name: product
+    description: Demo endpoint for the product table
+
+servers:
+  - url: /
+paths:
+  /item:
+    get:
+      tags:
+        - item
+      summary: Gets a list of items in the logistics system
+      description: Get a list of items in the database, optionally filterable on columns
+      operationId: getItems
+      parameters:
+        - in: query
+          name: serialnumber
+          description: Serial Number of item to get
+          required: false
+          schema:
+            type: integer
+
+        - in: query
+          name: product
+          description: Name of the product to filter by (i.e. "Pixel 6"). Accepts product name or id
+          required: false
+          schema:
+            type: string
+
+        - in: query
+          name: inventory
+          description: Name of the inventory to filter by (i.e. "Backend Storage"). Accepts inventory name or id
+          required: false
+          schema:
+            type: string
+
+        - in: query
+          name: condition
+          description: Condition of item to filter by
+          required: false
+          schema:
+            type: string
+            enum:
+              - New
+              - Used
+              - Refurbished
+
+      responses:
+        '200':
+          description: Returns a list of items matching set filters
+          content:
+            application/json:
+              examples:
+                Example Response:
+                  value: |-
+                    [
+                      {
+                        "city": "Ottawa",
+                        "condition": "Refurbished",
+                        "country": "Canada",
+                        "damage_description": "Like new",
+                        "inventory_name": "Frontend Storage",
+                        "product_brand": "Google",
+                        "product_name": "Pixel 6",
+                        "serial_number": 2312412,
+                        "weather": "Currently, it is 20.22°C and feels like 20.6°C. There is a thunderstorm with a humidity of 88 and a windspeed of 2.57km/h"
+                      },
+                      {
+                        "city": "Vancouver",
+                        "condition": "Used",
+                        "country": "Canada",
+                        "damage_description": "Weak magnet",
+                        "inventory_name": "Vancouver Storage",
+                        "product_brand": "Yeti",
+                        "product_name": "Rambler® 30 oz Tumbler",
+                        "serial_number": 2424444,
+                        "weather": "Currently, it is 12.09°C and feels like 11.76°C. There is a moderate rain with a humidity of 92 and a windspeed of 4.63km/h"
+                      },
+                      {
+                        "city": "Ottawa",
+                        "condition": "New",
+                        "country": "Canada",
+                        "damage_description": "",
+                        "inventory_name": "Backend Storage",
+                        "product_brand": "Crayola",
+                        "product_name": "Anti-Dust Chalk Sticks",
+                        "serial_number": 2142444,
+                        "weather": "Currently, it is 20.22°C and feels like 20.6°C. There is a thunderstorm with a humidity of 88 and a windspeed of 2.57km/h"
+                      }
+                    ]
+        '400':
+          description: Error encountered in execution
+
+    post:
+      tags:
+        - item
+      summary: Adds an item to the logistics database
+      description: Adds an item to the database, check the /product GET and /inventory GET requests for valid inputs to the product and inventory fields. Alternatively, demo automatically populates 3 items for each on IDs 1-3
+      operationId: addItem
+      parameters:
+        - in: query
+          name: serialnumber
+          description: Serial Number of item to be inserted
+          required: true
+          schema:
+            type: integer
+
+        - in: query
+          name: product
+          description: Product of item to be inserted (i.e. "Pixel 6"). Accepts product name or id
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: inventory
+          description: Inventory of the item to be inserted (i.e. "Backend Storage"). Accepts inventory name or id
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: damageDescription
+          description: Description of any damage to item
+          required: false
+          schema:
+            type: string
+
+        - in: query
+          name: condition
+          description: Condition of item to be inserted
+          required: false
+          schema:
+            type: string
+            enum:
+              - New
+              - Used
+              - Refurbished
+            default: New
+
+      responses:
+        '201':
+          description: Returns a confirmation that the item was successfully added
+
+        '400':
+          description: Error encountered in execution
+
+    put:
+      tags:
+        - item
+      summary: Update an item in the database
+      description: Update columns of an existing item in the database, check the /product GET and /inventory GET requests for valid inputs to the product and inventory fields. Alternatively, demo automatically populates 3 items for each on IDs 1-3
+      operationId: updateItem
+      parameters:
+        - in: query
+          name: serialnumber
+          description: Serial Number of item to update
+          required: true
+          schema:
+            type: integer
+
+        - in: query
+          name: product
+          description: New product for the selected item (i.e. "Pixel 6"), accepts name or ID
+          required: false
+          schema:
+            type: string
+
+        - in: query
+          name: inventory
+          description: New product for the selected item (i.e. "Backend Storage"), accepts name or ID
+          required: false
+          schema:
+            type: string
+
+        - in: query
+          name: condition
+          description: New condition of the selected item
+          required: false
+          schema:
+            type: string
+            enum:
+              - New
+              - Used
+              - Refurbished
+
+      responses:
+        '200':
+          description: Returns a confirmation that the item was sucessfully updated
+
+        '400':
+          description: Error encountered in execution
+
+        '404':
+          description: Could not find specified item
+
+    delete:
+      tags:
+        - item
+      summary: Deletes an item from the database
+      description: Deletes a single item from the database
+      operationId: deleteItem
+      parameters:
+        - in: query
+          name: serialnumber
+          description: Serial Number of item to delete
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Returns an affirmation that the deletion was successful
+
+        '400':
+          description: Error encountered in execution
+
+        '404':
+          description: Could not find specified item
+
+  /inventory:
+    get:
+      tags:
+        - inventory
+      summary: >-
+        A simple endpoint to get a list of inventories currently in the database
+        for use in this demo
+      description: >-
+        An endpoint to get a list of inventories, this is built for reviewers to
+        easily see valid inputs for /item POST in this demo.
+      operationId: getInventories
+      responses:
+        '200':
+          description: Endpoint executed sucessfully
+          content:
+            application/json:
+              examples:
+                Example Response:
+                  value: |-
+                    [
+                      {
+                        "address": {
+                          "City": "Ottawa",
+                          "Country": "Canada",
+                          "House Number": 151,
+                          "Postal Code": "K2P 2L8",
+                          "State": "ON",
+                          "Street Name": "O'Connor St"
+                        },
+                        "inventory_name": "Backend Storage",
+                        "owner": "Placeholder Person #1",
+                        "size": 1
+                      },
+                      {
+                        "address": {
+                          "City": "Ottawa",
+                          "Country": "Canada",
+                          "House Number": 234,
+                          "Postal Code": "K2P 2L8",
+                          "State": "ON",
+                          "Street Name": "Laurier Ave W"
+                        },
+                        "inventory_name": "Frontend Storage",
+                        "owner": "Placeholder Person #2",
+                        "size": 1
+                      },
+                      {
+                        "address": {
+                          "City": "Vancouver",
+                          "Country": "Canada",
+                          "House Number": 1055,
+                          "Postal Code": "V7X 1L3",
+                          "State": "BC",
+                          "Street Name": "Dunsmuir Street"
+                        },
+                        "inventory_name": "Vancouver Storage",
+                        "owner": "Placeholder Person #3",
+                        "size": 1
+                      }
+                    ]
+        '400':
+          description: Error encountered in execution
+
+  /product:
+    get:
+      tags:
+        - product
+      summary: >-
+        A simple endpoint to get a list of products currently in the database
+        for use in this demo
+      description: >-
+        An endpoint to get a list of products, this is built for reviewers to
+        easily see valid inputs for /item POST in this demo.
+      operationId: getProducts
+      responses:
+        '200':
+          description: Returns a list of products, these hold information about a type of item
+          content:
+            application/json:
+              examples:
+                Example Response:
+                  value: |-
+                    [
+                      {
+                        "product_brand": "Google",
+                        "product_description": "Dual rear camera system: 50 MP wide 12 MP ultrawide",
+                        "product_name": "Pixel 6"
+                      },
+                      {
+                        "product_brand": "Yeti",
+                        "product_description": "Iced coffee, sweet tea, lemonade, water, you name it, you’re set. Fits in most cupholders.",
+                        "product_name": "Rambler® 30 oz Tumbler"
+                      },
+                      {
+                        "product_brand": "Crayola",
+                        "product_description": "Crayola Anti-Dust Chalk sticks keep dust to a minimum and are perfect for \r\n        writing and drawing on blackboards. Available in white.",
+                        "product_name": "Anti-Dust Chalk Sticks"
+                      }
+                    ]
+        '400':
+          description: Error encountered in execution
