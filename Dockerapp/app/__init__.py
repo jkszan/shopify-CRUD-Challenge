@@ -1,6 +1,6 @@
 from flask import Flask, g, send_from_directory, render_template
 from flask_cors import CORS
-from app.routes import inventory, item, errorhandler, product
+from app.routes import inventory, item, errorhandler, product, address
 from app.modules import LoggingRealDictCursor
 import psycopg2
 import os
@@ -75,7 +75,7 @@ def favicon():
 # Registering our route Blueprints. It's annoying to do it this way and it's possible to iterate through all files in the routes folder and register [filename.filename] for each, but this
 # is much easier for future maintainers to understand. Preferably you would have both but generally I believe that readability and maintainability are much more important than visually appealing
 # solutions
-selectedBlueprints = [inventory.inventory, product.product, item.item, errorhandler.errorhandler]
+selectedBlueprints = [inventory.inventory, product.product, item.item, errorhandler.errorhandler, address.address]
 
 for blueprint in selectedBlueprints:
     flaskapp.register_blueprint(blueprint)

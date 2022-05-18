@@ -1,9 +1,9 @@
-from flask import Blueprint, g, make_response, jsonify
+from flask import Blueprint, g, make_response, jsonify, request
 from app.modules.errors import DatabaseError
+from app.modules.validation import checkRequiredInput
 
 
-# This file is used to implement inventory management, in a proper implementation we would have a full CRUD system for inventories as well but this is outside the scope
-# of the submission. For demo purposes I have manually added in inventories in a script that runs on Docker startup
+# This file is used to implement inventory management, in a proper implementation we would have a full CRUD system for inventories
 
 inventory = Blueprint('inventory', __name__, url_prefix='/inventory')
 
@@ -26,6 +26,30 @@ def getInventory():
         __formatInventory(inventory)
 
     return make_response(jsonify(inventories), 200)
+
+@inventory.route('/',
+    strict_slashes=False,
+    methods=['POST'])
+def addInventory():
+
+    args = request.args
+    address_id = args.get("address_id", default="", type=int)
+    inventory_name = args.get("name", default="", type=str)
+    owner = args.get("name", default="", type=str)
+
+    checkRequiredInput({"Address": address_id, "Name": inventory_name})
+
+    insertQuery = 'INSERT INTO inventory(address_id, inventory_name, owner) VALUES (%s, %s, %s)'
+
+    queryValues = [address_id, inventory_name, owner]
+
+    try:
+        g.dbcursor.execute(insertQuery, queryValues)
+        g.dbcon.commit()
+    except Exception as e:
+        raise DatabaseError(e)
+
+    return make_response("Inventory added successfully", 201)
 
 # Simple helper function to format inventory, could potentially be used in future inventory endpoints
 def __formatInventory(inventory):

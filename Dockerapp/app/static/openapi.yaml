@@ -10,11 +10,14 @@ tags:
   - name: item
     description: Endpoints implementing CRUD operations for the item table
 
-  - name: inventory
-    description: Demo endpoint for the inventory table
-
   - name: product
     description: Demo endpoint for the product table
+
+  - name: inventory
+    description: GET and PUT endpoints for the inventory table
+
+  - name: address
+    description: GET and PUT endpoints for the address table
 
 servers:
   - url: /
@@ -232,15 +235,53 @@ paths:
         '404':
           description: Could not find specified item
 
+  /product:
+    get:
+      tags:
+        - product
+      summary: >-
+        A simple endpoint to get a list of products currently in the database
+        for use in this demo
+      description: >-
+        An endpoint to get a list of products, this is built for reviewers to
+        easily see valid inputs for /item POST in this demo.
+      operationId: getProducts
+      responses:
+        '200':
+          description: Returns a list of products, these hold information about a type of item
+          content:
+            application/json:
+              examples:
+                Example Response:
+                  value: |-
+                    [
+                      {
+                        "product_brand": "Google",
+                        "product_description": "Dual rear camera system: 50 MP wide 12 MP ultrawide",
+                        "product_name": "Pixel 6"
+                      },
+                      {
+                        "product_brand": "Yeti",
+                        "product_description": "Iced coffee, sweet tea, lemonade, water, you name it, you’re set. Fits in most cupholders.",
+                        "product_name": "Rambler® 30 oz Tumbler"
+                      },
+                      {
+                        "product_brand": "Crayola",
+                        "product_description": "Crayola Anti-Dust Chalk sticks keep dust to a minimum and are perfect for \r\n        writing and drawing on blackboards. Available in white.",
+                        "product_name": "Anti-Dust Chalk Sticks"
+                      }
+                    ]
+        '400':
+          description: Error encountered in execution
+
+
   /inventory:
     get:
       tags:
         - inventory
-      summary: >-
-        A simple endpoint to get a list of inventories currently in the database
+      summary: A simple endpoint to get a list of inventories currently in the database
         for use in this demo
-      description: >-
-        An endpoint to get a list of inventories, this is built for reviewers to
+      description: An endpoint to get a list of inventories, this is built for reviewers to
         easily see valid inputs for /item POST in this demo.
       operationId: getInventories
       responses:
@@ -295,41 +336,114 @@ paths:
         '400':
           description: Error encountered in execution
 
-  /product:
+    post:
+      tags:
+        - inventory
+      summary: Adds an inventory to the logistics database
+      description: Adds an inventory to the database
+      operationId: addInventory
+      parameters:
+      - in: query
+        name: address_id
+        description: ID related to address of inventory to be inserted
+        required: true
+        schema:
+          type: integer
+
+      - in: query
+        name: name
+        description: Name of inventory to be inserted
+        required: true
+        schema:
+          type: string
+
+      - in: query
+        name: owner
+        description: Owner of the inventory to be inserted
+        required: false
+        schema:
+          type: string
+
+      responses:
+        '201':
+          description: Returns a confirmation that the inventory was successfully added
+
+        '400':
+          description: Error encountered in execution
+
+
+  /address:
     get:
       tags:
-        - product
-      summary: >-
-        A simple endpoint to get a list of products currently in the database
-        for use in this demo
-      description: >-
-        An endpoint to get a list of products, this is built for reviewers to
-        easily see valid inputs for /item POST in this demo.
-      operationId: getProducts
+        - address
+      summary: A simple endpoint to get a list of addresses currently in the database
+      description: An endpoint to get a list of addresses
+      operationId: getAddresses
       responses:
         '200':
-          description: Returns a list of products, these hold information about a type of item
-          content:
-            application/json:
-              examples:
-                Example Response:
-                  value: |-
-                    [
-                      {
-                        "product_brand": "Google",
-                        "product_description": "Dual rear camera system: 50 MP wide 12 MP ultrawide",
-                        "product_name": "Pixel 6"
-                      },
-                      {
-                        "product_brand": "Yeti",
-                        "product_description": "Iced coffee, sweet tea, lemonade, water, you name it, you’re set. Fits in most cupholders.",
-                        "product_name": "Rambler® 30 oz Tumbler"
-                      },
-                      {
-                        "product_brand": "Crayola",
-                        "product_description": "Crayola Anti-Dust Chalk sticks keep dust to a minimum and are perfect for \r\n        writing and drawing on blackboards. Available in white.",
-                        "product_name": "Anti-Dust Chalk Sticks"
-                      }
-                    ]
+          description: Endpoint executed sucessfully
+        '400':
+          description: Error encountered in execution
+
+    post:
+      tags:
+        - address
+      summary: Adds an address to the logistics database
+      description: Adds an address to the database, returns associated ID
+      operationId: addAddress
+      parameters:
+        - in: query
+          name: country
+          description: Country of address to be inserted
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: state
+          description: State of address to be inserted
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: city
+          description: City of address to be inserted
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: street
+          description: Street of address to be inserted
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: house_number
+          description: House number of address to be inserted
+          required: true
+          schema:
+            type: integer
+
+        - in: query
+          name: postal_code
+          description: Postal code of address to be inserted
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: apt_specifier
+          description: Apartment of address to be inserted
+          required: false
+          schema:
+            type: string
+
+      responses:
+        '201':
+          description: Returns a confirmation along with the ID of the new address
+
         '400':
           description: Error encountered in execution
