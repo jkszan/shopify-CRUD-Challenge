@@ -34,6 +34,16 @@ This is meant to operate as a demo application to give reviewers a general idea 
 
 While I could have created a CRUD app for items using a single large "item" table but to simulate this being a component in a larger system I have made a small database schema.
 
+### **Additional Requirements:**
+For this submission, the requirements I've chosen are:
+- The Ability to assign/remove inventory items to a named group/collection
+- The Ability to create warehouses/locations and assign inventory to specific locations
+
+
+I believe that both of these requirements are very closely related and both have been implemented together in the form of the relationship between the items table, the inventory table, and the address table. The inventory table works as both a specific location that items can be assigned to that has a linked address as well as a logical grouping of items with attached metadata such as "name", "owner", and "size".
+
+
+Originally this solution had an additional "location" table between address and inventory but it ended up having very few pieces of relevant data that couldn't be more naturally placed in either of it's related tables. In the future a location table could be recreated with a location_type enum (i.e. 'Warehouse') and/or a longform location description if this data is required
 <br />
 
 ## Requirements and Usage Instructions
