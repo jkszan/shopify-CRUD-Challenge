@@ -35,7 +35,7 @@ def addInventory():
     args = request.args
     address_id = args.get("address_id", default="", type=int)
     inventory_name = args.get("name", default="", type=str)
-    owner = args.get("name", default="", type=str)
+    owner = args.get("owner", default=None, type=str)
 
     checkRequiredInput({"Address": address_id, "Name": inventory_name})
 

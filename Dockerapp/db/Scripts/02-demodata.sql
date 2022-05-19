@@ -27,4 +27,4 @@ INSERT INTO inventory(address_id, inventory_name, owner) VALUES ((SELECT address
 INSERT INTO item(serial_number, inventory_id, product_id, condition, damage_description) VALUES
     (2312412, 2, 1, 'Refurbished', 'Like new'),
     (2424444, 3, 2, 'Used', 'Weak magnet'),
-    (2142444, 1, 3, 'New', '');
+    (2142444, 1, 3, 'New', NULL);

@@ -25,7 +25,7 @@ def addItem():
     serialnumber = args.get("serialnumber", default="", type=int)
     product = args.get("product", default="", type=str)
     condition = args.get("condition", default="New", type=str) # This also defaults to 'New' on the DB side
-    damageDescription = args.get("damageDescription", default="", type=str)
+    damageDescription = args.get("damageDescription", default=None, type=str)
     inventory = args.get("inventory", default="", type=str)
 
     checkRequiredInput({'Serial Number' : serialnumber, 'Product' : product, 'Inventory' : inventory})
@@ -148,7 +148,7 @@ def updateItem():
 
     product = args.get("product", default="", type=str)
     condition = args.get("condition", default="", type=str)
-    damageDescription = args.get("damageDescription", default="", type=str)
+    damageDescription = args.get("damage_description", default="", type=str)
     inventory = args.get("inventory", default="", type=str)
     serialnumber = args.get("serialnumber", default="", type=int)
 

@@ -35,6 +35,8 @@ This is meant to operate as a demo application to give reviewers a general idea 
 
 While I could have created a CRUD app for items using a single large "item" table but to simulate this being a component in a larger system I have made a small database schema.
 
+<br />
+
 ### **Additional Requirements:**
 For this submission, the requirement I've chosen is:
 - The Ability to create warehouses/locations and assign inventory to specific locations
@@ -43,6 +45,7 @@ This has been implemented in the form of the relationship between the items tabl
 
 Originally this solution had an additional "location" table between address and inventory but it ended up having very few pieces of relevant data that couldn't be more naturally placed in either of it's related tables. In the future a location table could be recreated with a location_type enum (i.e. 'Warehouse') and/or a long form location description if this data is required. Currently you can approximate these values through the inventory_name variable (i.e. 'Production Engineer Warehouse')
 
+<br />
 
 ## Requirements and Usage Instructions
 
@@ -67,7 +70,7 @@ To start the application, run:
 
 From the root of the Github repo
 
-
+<br />
 
 ### **Usage:**
 By default the REST API should be available at http://localhost:5000 or https://shopify-crud-system.jkszan.repl.co/ depending on which distribution you are using, you can either call the endpoints directly or use the provided Swagger UI interface.
@@ -76,6 +79,7 @@ To use the Swagger UI interface you need to click an endpoint, press the "Try it
 
 
 
+<br />
 
 ## Database Relations and Starting Demo Data
 

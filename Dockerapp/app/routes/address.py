@@ -35,7 +35,7 @@ def addAddress():
     city = args.get("city", default="", type=str)
     street = args.get("street", default="", type=str)
     house_number = args.get("house_number", default="", type=int)
-    apt = args.get("apt_specifier", default="", type=str)
+    apt = args.get("apt_specifier", default=None, type=str)
     postal_code = args.get("postal_code", default="", type=str)
 
     checkRequiredInput({"Country": country, "State": state, "City": city, "Street": street, "House Number": house_number, "Postal Code": postal_code})

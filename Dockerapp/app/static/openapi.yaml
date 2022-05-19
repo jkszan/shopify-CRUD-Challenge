@@ -191,6 +191,13 @@ paths:
             type: string
 
         - in: query
+          name: damage_description
+          description: New damage description of the selected item
+          required: false
+          schema:
+            type: string
+
+        - in: query
           name: condition
           description: New condition of the selected item
           required: false
