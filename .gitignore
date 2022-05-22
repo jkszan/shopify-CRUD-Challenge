@@ -1,2 +1,2 @@
-./Dockerapp/db/data
-./.env
+Dockerapp/db/data/
+Dockerapp/.env

@@ -1,18 +1,21 @@
 from psycopg2.extras import RealDictCursor
+from app.modules.errors import DatabaseError
 from flask import g
 
-# Making a simple custom psycopg2 cursor to log queries while using the RealDictCursor implementation
+# Here we define a custom psycopg2 cursor with RealDictCursor as a base. As the name suggests, we are just hooking this into our
+# logging and error handling system directly to save ourselves the effort of writing logging queries / try except blocks for each
+# database query
 class LoggingRealDictCursor(RealDictCursor):
 
     logger = None
 
-    # Setting logger
+    # Setting logger on startup
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
         self.logger = g.appLogger
 
-    # Implementing behavior to log every DB query
+    # Changing execute to send queries to our logger and raise DatabaseErrors
     def execute(self, sql, args=None):
 
         self.logger.info(self.mogrify(sql, args))
@@ -21,9 +24,21 @@ class LoggingRealDictCursor(RealDictCursor):
             return super().execute(sql, args)
         except Exception as e:
             self.logger.error(e)
-            raise
+            raise DatabaseError(e)
 
-    # fetchall and fetchone add logging to *fetched* query results, DELETE, INSERT or UPDATE statements will only clog up the logs
+
+    # Same as execute, while we aren't using executemany in our implementation it's good to support it for future development
+    def executemany(self, sql, args=None):
+
+        self.logger.info(self.mogrify(sql, args))
+
+        try:
+            return super().executemany(sql, args)
+        except Exception as e:
+            self.logger.error(e)
+            raise DatabaseError(e)
+
+    # Making it so fetched data (from either fetchone or fetchall) printout to logs
     def fetchall(self):
 
         try:
@@ -32,7 +47,7 @@ class LoggingRealDictCursor(RealDictCursor):
             return fetchedList
         except Exception as e:
             self.logger.error(e)
-            raise
+            raise DatabaseError(e)
 
     def fetchone(self):
 
@@ -42,4 +57,4 @@ class LoggingRealDictCursor(RealDictCursor):
             return fetchedResult
         except Exception as e:
             self.logger.error(e)
-            raise
+            raise DatabaseError(e)

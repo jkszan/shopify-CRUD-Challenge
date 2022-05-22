@@ -16,32 +16,29 @@ def exceptionHandler(exception):
                 'Traceback' : traceback.format_exc()
                 }
 
-    # We return intensive error info to logs and a simple error message to the user to make this more user-friendly and avoid showing potentially
-    # sensitive information about our internal system
     g.appLogger.error(errorReturn)
-
-    # Its possible to make an exhaustive system that captures every error raised in execution and gives each a status code to get and
-    # return here. For this demo we will just statically define it to be 400
 
     if hasattr(exception, 'description'):
         return make_response(exception.description, 400)
 
     return make_response(str(exception), 400)
 
+# For database errors, we want to give the cause of the error without internal
+# information to the user
 @errorhandler.app_errorhandler(DatabaseError)
 def databaseErrorHandler(exception):
 
-
+    # If the DatabaseException does not have postgres error information, we default to standard error
     try:
-        errorSpec = getPsycopg2Exception(exception.sourceError)
+        errorReturn = getPsycopg2Exception(exception.sourceError)
     except Exception as e:
-        errorSpec = {
-                'Error' : exception.description,
+        errorReturn = {
+                'Exception' : exception.description,
                 'Traceback' : traceback.format_exc()
                 }
 
-    g.appLogger.error(errorSpec)
-    return make_response(jsonify(errorSpec['Error']), exception.status_code)
+    g.appLogger.error(errorReturn)
+    return make_response(jsonify(errorReturn['Exception']), exception.status_code)
 
 @errorhandler.app_errorhandler(404)
 def notFound(exception):
@@ -52,7 +49,7 @@ def notFound(exception):
     }
     g.appLogger.error(errorReturn)
 
-    return exception
+    return make_response(jsonify(errorReturn['Exception']), 404)
 
 @errorhandler.app_errorhandler(405)
 def unauthorized(exception):
@@ -63,40 +60,37 @@ def unauthorized(exception):
     }
     g.appLogger.error(errorReturn)
 
-    return exception
+    return make_response(jsonify(errorReturn['Exception']), 404)
 
+# Simple function to get some extra information for database errors
 def getPsycopg2Exception(databaseError):
     from psycopg2 import OperationalError, errorcodes, errors
 
     errorSpec = {
                 "Traceback": traceback.format_exc(),
-                "Error": databaseError.pgerror,
+                "Exception": databaseError.pgerror,
                 "Code": databaseError.pgcode
                 }
 
     return errorSpec
 
+# Some simple /error routes to test exception handlers
 @errorhandler.route('/',
-    strict_slashes=False,
     methods=['GET'])
 def generalError():
-    raise Exception('Testing Database Error')
+    raise Exception('Test General Exception')
 
 @errorhandler.route('/databaseError',
-    strict_slashes=False,
     methods=['GET'])
 def databaseError():
-    raise DatabaseError('Testing Database Error')
+    raise DatabaseError('Test Database Error')
 
 @errorhandler.route('/404',
-    strict_slashes=False,
     methods=['GET'])
 def notFoundtester():
-    raise NotFound('Testing 404 Error')
+    raise NotFound('Test 404 Error')
 
 @errorhandler.route('/405',
-    strict_slashes=False,
     methods=['GET'])
 def unauthorizedtester():
-    raise MethodNotAllowed('Testing 405 Error')
-
+    raise MethodNotAllowed('Test 405 Error')

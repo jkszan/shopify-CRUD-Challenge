@@ -1,25 +1,19 @@
 from flask import Blueprint, g, make_response, jsonify, request
-from app.modules.errors import DatabaseError
-from app.modules.validation import checkRequiredInput
-
+from app.routes import requires
 
 # This file is used to implement inventory management, in a proper implementation we would have a full CRUD system for inventories
 
 inventory = Blueprint('inventory', __name__, url_prefix='/inventory')
 
 @inventory.route('/',
-    strict_slashes=False,
     methods=['GET'])
 def getInventory():
 
     # Simple query to get relevant information for inventory
     getQuery = 'SELECT inventory_name, owner, size, address_city, address_country, address_state, street_name, house_number, postal_code FROM inventory NATURAL JOIN address'
 
-    try:
-        g.dbcursor.execute(getQuery)
-        inventories = g.dbcursor.fetchall()
-    except Exception as e:
-        raise DatabaseError(e)
+    g.dbcursor.execute(getQuery)
+    inventories = g.dbcursor.fetchall()
 
     # For readability, we will reorganize address information into a subdict
     for inventory in inventories:
@@ -28,26 +22,21 @@ def getInventory():
     return make_response(jsonify(inventories), 200)
 
 @inventory.route('/',
-    strict_slashes=False,
     methods=['POST'])
+@requires('address_id', 'name')
 def addInventory():
 
     args = request.args
-    address_id = args.get("address_id", default="", type=int)
-    inventory_name = args.get("name", default="", type=str)
-    owner = args.get("owner", default=None, type=str)
-
-    checkRequiredInput({"Address": address_id, "Name": inventory_name})
+    address_id = args.get("address_id", type=int)
+    inventory_name = args.get("name", type=str)
+    owner = args.get("owner", type=str)
 
     insertQuery = 'INSERT INTO inventory(address_id, inventory_name, owner) VALUES (%s, %s, %s)'
 
     queryValues = [address_id, inventory_name, owner]
 
-    try:
-        g.dbcursor.execute(insertQuery, queryValues)
-        g.dbcon.commit()
-    except Exception as e:
-        raise DatabaseError(e)
+    g.dbcursor.execute(insertQuery, queryValues)
+    g.dbcon.commit()
 
     return make_response("Inventory added successfully", 201)
 

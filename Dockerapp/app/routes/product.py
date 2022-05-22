@@ -9,7 +9,6 @@ product = Blueprint('product', __name__, url_prefix='/product')
 
 # Simple endpoint to grab product information for demo
 @product.route('/',
-    strict_slashes=False,
     methods=['GET'])
 def getProduct():
 

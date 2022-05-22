@@ -1,5 +1,5 @@
 from flask import g
-from app.modules.errors import InputError, DatabaseError
+from app.modules.errors import InputError
 
 def getProductID(productName):
     query = 'SELECT product_id as id FROM product WHERE product_name = %s'
@@ -9,17 +9,16 @@ def getInventoryID(inventoryName):
     query = 'SELECT inventory_id as id FROM inventory WHERE inventory_name = %s'
     return __getID(inventoryName, query, 'inventory_id')
 
+# General getID helper function, can be expanded to implement ID fetching other tables where necesary
 def __getID(name, query, column_name):
 
     # If the name is already all digits, assume that ID has been passed as input
     if name.isdigit():
         return name
 
-    try:
-        g.dbcursor.execute(query, [name])
-        resultIDs = g.dbcursor.fetchall()
-    except Exception as e:
-        raise DatabaseError(e)
+    g.dbcursor.execute(query, name)
+    resultIDs = g.dbcursor.fetchall()
+
 
     if len(resultIDs) > 1:
         raise InputError('Multiple entries returned for ' + column_name)

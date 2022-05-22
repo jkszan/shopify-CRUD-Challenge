@@ -17,6 +17,7 @@ def setConfigInfo():
         flaskapp.config.from_object('app.config.Config')
 
     flaskapp.logger.setLevel(flaskapp.config['LOG_LEVEL'])
+    flaskapp.url_map.strict_slashes == False
 
 # Helper function to get a database connection, setting default cursor to a custom-made logging cursor
 def getConn():

@@ -1,3 +1,7 @@
+#This file exists as a place to define custom errors
+
+# DatabaseError is a wrapper for any other error that props up as a part of a database transaction. We need to store
+# the source error to properly access Postgres error information
 class DatabaseError(Exception):
     status_code = 400
     description = "DatabaseError: Exception encountered during database interaction"

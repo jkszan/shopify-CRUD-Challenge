@@ -1,6 +1,5 @@
 from flask import Blueprint, g, make_response, jsonify, request
-from app.modules.errors import DatabaseError
-from app.modules.validation import checkRequiredInput
+from app.routes import requires
 
 
 # This file is used to implement address management, in a proper implementation we would have a full CRUD system for this
@@ -8,37 +7,30 @@ from app.modules.validation import checkRequiredInput
 address = Blueprint('address', __name__, url_prefix='/address')
 
 @address.route('/',
-    strict_slashes=False,
     methods=['GET'])
 def getAddress():
 
     getQuery = 'SELECT * FROM address'
 
-    try:
-        g.dbcursor.execute(getQuery)
-        addresses = g.dbcursor.fetchall()
-    except Exception as e:
-        raise DatabaseError(e)
+    g.dbcursor.execute(getQuery)
+    addresses = g.dbcursor.fetchall()
 
     return make_response(jsonify(addresses), 200)
 
 
 @address.route('/',
-    strict_slashes=False,
     methods=['POST'])
+@requires('country', 'state', 'city', 'street', 'house_number', 'postal_code')
 def addAddress():
 
     args = request.args
-
-    country = args.get("country", default="", type=str)
-    state = args.get("state", default="", type=str)
-    city = args.get("city", default="", type=str)
-    street = args.get("street", default="", type=str)
-    house_number = args.get("house_number", default="", type=int)
-    apt = args.get("apt_specifier", default=None, type=str)
-    postal_code = args.get("postal_code", default="", type=str)
-
-    checkRequiredInput({"Country": country, "State": state, "City": city, "Street": street, "House Number": house_number, "Postal Code": postal_code})
+    country = args.get("country", type=str)
+    state = args.get("state", type=str)
+    city = args.get("city", type=str)
+    street = args.get("street", type=str)
+    house_number = args.get("house_number", type=int)
+    apt = args.get("apt_specifier", type=str)
+    postal_code = args.get("postal_code", type=str)
 
     insertQuery = '''
         INSERT INTO address(address_country, address_state, address_city, street_name, house_number, apt_specifier, postal_code)
@@ -47,11 +39,8 @@ def addAddress():
 
     queryValues = [country, state, city, street, house_number, apt, postal_code]
 
-    try:
-        g.dbcursor.execute(insertQuery, queryValues)
-        address_id = g.dbcursor.fetchone().get('address_id')
-        g.dbcon.commit()
-    except Exception as e:
-        raise DatabaseError(e)
+    g.dbcursor.execute(insertQuery, queryValues)
+    address_id = g.dbcursor.fetchone().get('address_id')
+    g.dbcon.commit()
 
     return make_response("Address added successfully under id " + str(address_id), 201)

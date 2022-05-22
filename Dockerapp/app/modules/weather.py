@@ -1,14 +1,22 @@
 from flask import g
 import requests
-import os
+from os import environ
 
-openWeatherKey = os.environ["WEATHER_APIKEY"]
+# This file implements calls to the OpenWeatherAPI
 
 def getWeather(city, country):
 
+    openWeatherKey = environ['WEATHER_APIKEY']
+
     # Calling open weather API as json
     apiCall = 'https://api.openweathermap.org/data/2.5/weather?q={},{}&APPID={}&units=metric'.format(city, country, openWeatherKey)
-    jsonResp = requests.get(apiCall).json()
+    resp = requests.get(apiCall)
+
+    # Raising error if API Call did not return successfully
+    resp.raise_for_status()
+
+    # Converting response data to readable dict
+    jsonResp = resp.json()
 
     # Parsing information from API return
     temp = jsonResp["main"]["temp"]
